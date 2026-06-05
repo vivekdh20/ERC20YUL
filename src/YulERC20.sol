@@ -182,7 +182,7 @@ contract YulERC20 {
                 let toSlot := balanceSlot(to)
                 let toBal  := sload(toSlot)
                 let newToBal := add(toBal, amount)
-                if lt(newToBal, toBal) { revert(0, 0) }  // overflow check
+                // if lt(newToBal, toBal) { revert(0, 0) }  // overflow check
                 sstore(toSlot, newToBal)
 
                 // emit Transfer(from, to, amount)
@@ -226,7 +226,7 @@ contract YulERC20 {
                 let toSlot  := balanceSlot(to)
                 let toBal   := sload(toSlot)
                 let newToBal := add(toBal, amount)
-                if lt(newToBal, toBal) { revert(0, 0) }
+                // if lt(newToBal, toBal) { revert(0, 0) }
                 sstore(toSlot, newToBal)
 
                 // emit Transfer(from, to, amount)
