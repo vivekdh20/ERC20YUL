@@ -1,66 +1,45 @@
-## Foundry
+# YulERC20
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A fully ERC-20 compliant token written in **inline Yul assembly**. No OpenZeppelin. No Solidity logic. Pure opcodes.
 
-Foundry consists of:
+Built as a 4-day deep dive into EVM internals using Foundry.
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## What's inside
 
-## Documentation
+- `src/YulERC20.sol` — Full ERC-20 in a single fallback function with a manual selector router
+- `src/OZToken.sol` — OpenZeppelin ERC20 wrapper for benchmarking
+- `test/YulERC20.t.sol` — 42 tests: unit, fuzz, raw storage verification, calldata anatomy
+- `test/GasBenchmark.t.sol` — Side-by-side gas comparison
+- `GAS_REPORT.md` — Full benchmark analysis
 
-https://book.getfoundry.sh/
+## Gas Results
 
-## Usage
+| Operation | OpenZeppelin | Yul | Saved |
+|---|---|---|---|
+| Deploy | 864,990 | 294,595 | **−65.9%** |
+| transfer | 38,481 | 37,273 | −3.1% |
+| transferFrom | 52,870 | 50,661 | −4.2% |
+| approve | 33,188 | 32,209 | −3.0% |
 
-### Build
+## Run it
 
-```shell
-$ forge build
+```bash
+forge test -vv
+forge snapshot
 ```
 
-### Test
+## Storage layout
 
-```shell
-$ forge test
-```
+| Slot | Variable |
+|---|---|
+| 0 | totalSupply |
+| 1 | balanceOf mapping |
+| 2 | allowance mapping |
+| 3 | name (bytes32) |
+| 4 | symbol (bytes32) |
+| 5 | decimals |
 
-### Format
+## Concepts covered
 
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Manual ABI decoding · keccak256 slot derivation · calldata layout · mstore/sstore/sload · log3 event emission · Foundry fuzz testing · forge snapshot gas benchmarks
+EOF
